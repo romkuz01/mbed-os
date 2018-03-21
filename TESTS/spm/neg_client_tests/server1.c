@@ -39,10 +39,10 @@ void server_main1(void *ptr)
                     memset(msg_buff, 0, msg_buff_SIZE);
                     uint32_t bytes_read = 0;
                     for (size_t i = 0; i < PSA_MAX_INVEC_LEN; i++) {
-                        bytes_read = psa_read(msg.handle, i, msg_buff + bytes_read, msg.size[i]);
+                        bytes_read = psa_read(msg.handle, i, msg_buff + bytes_read, msg.in_size[i]);
                     }
 
-                    if (msg.response_size > 0) {
+                    if (msg.out_size[0] > 0) {
                         psa_write(msg.handle, 0, msg_buff, bytes_read);
                     }
                     break;

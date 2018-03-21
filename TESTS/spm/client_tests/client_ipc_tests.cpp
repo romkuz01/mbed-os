@@ -42,9 +42,7 @@ typedef struct th_struct {
 
 static psa_handle_t client_ipc_tests_connect(uint32_t sfid, uint32_t minor_version)
 {
-    psa_handle_t handle = psa_connect( sfid,
-                                       minor_version
-                                     );
+    psa_handle_t handle = psa_connect(sfid, minor_version);
 
     TEST_ASSERT_TRUE(handle > 0);
 
@@ -63,12 +61,17 @@ static void client_ipc_tests_call(
     error_t status = PSA_SUCCESS;
     uint8_t *response_buf = (uint8_t*)malloc(CLIENT_RSP_BUF_SIZE * sizeof(uint8_t));
     memset(response_buf, 0, CLIENT_RSP_BUF_SIZE);
+    iovec_t resp = {NULL, rx_len};
+
+    if (rx_len > 0) {
+        resp.iov_base = response_buf;
+    }
 
     status = psa_call( handle,
                         (tx_len ? iovec_temp : NULL),
                         tx_len,
-                        (rx_len ? response_buf : NULL),
-                        rx_len
+                        (rx_len ? &resp : NULL),
+                        rx_len ? 1 : 0
                     );
 
     if (expected) {

@@ -54,37 +54,29 @@ void error(const char* format, ...)
 
 /* ------------------------------------- Functions ----------------------------------- */
 
-static psa_handle_t client_ipc_tests_connect(uint32_t sfid, uint32_t minor_version)
+static psa_handle_t negative_client_ipc_tests_connect(uint32_t sfid, uint32_t minor_version)
 {
-    psa_handle_t handle = psa_connect( sfid,
-                                       minor_version
-                                     );
-
+    psa_handle_t handle = psa_connect(sfid, minor_version);
     TEST_ASSERT_TRUE(handle > 0);
-
     return handle;
 }
 
-static void client_ipc_tests_call( psa_handle_t handle,
-                                   iovec *iovec_temp,
+static void negative_client_ipc_tests_call( psa_handle_t handle,
+                                   iovec_t *iovec_temp,
                                    size_t tx_len,
                                    size_t rx_len
                                  )
 {
     error_t status = PSA_SUCCESS;
     memset(response_buf, 0, sizeof(response_buf));
+    iovec_t resp = { response_buf, rx_len };
 
-    status = psa_call( handle,
-                       iovec_temp,
-                       tx_len,
-                       response_buf,
-                       rx_len
-                     );
+    status = psa_call(handle, iovec_temp, tx_len, &resp, 1);
 
     TEST_ASSERT_EQUAL_INT(PSA_SUCCESS, status);
 }
 
-static void client_ipc_tests_close(psa_handle_t handle)
+static void negative_client_ipc_tests_close(psa_handle_t handle)
 {
     error_t status = PSA_SUCCESS;
     status = psa_close(handle);
@@ -127,15 +119,15 @@ void client_call_invalid_tx_len()
 {
     psa_handle_t handle = 0;
 
-    handle = client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    handle = negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
 
     uint8_t data[2] = {1, 0};
 
-    iovec iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
+    iovec_t iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
                                            {data, sizeof(data)},
                                            {data, sizeof(data)}};
 
-    client_ipc_tests_call(handle, iovec_temp, INVALID_TX_LEN, CLIENT_RSP_BUF_SIZE);
+    negative_client_ipc_tests_call(handle, iovec_temp, INVALID_TX_LEN, CLIENT_RSP_BUF_SIZE);
 
     TEST_FAIL_MESSAGE("client_call_invalid_tx_len negative test failed");
 }
@@ -144,22 +136,14 @@ void client_call_invalid_tx_len()
 void client_call_rx_buff_null_rx_len_not_zero()
 {
     psa_handle_t handle = 0;
-    size_t rx_len = 1;
-
-    handle = client_ipc_tests_connect(PART1_SF1, MINOR_VER);
-
     uint8_t data[2] = {1, 0};
-
-    iovec iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
+    iovec_t iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
                                            {data, sizeof(data)},
                                            {data, sizeof(data)}};
 
-    psa_call( handle,
-              iovec_temp,
-              PSA_MAX_INVEC_LEN,
-              NULL,
-              rx_len
-            );
+    handle = negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+
+    psa_call(handle, iovec_temp, PSA_MAX_INVEC_LEN, NULL, 1);
 
     TEST_FAIL_MESSAGE("client_call_rx_buff_null_rx_len_not_zero negative test failed");
 }
@@ -169,16 +153,11 @@ void client_call_iovecs_null_tx_len_not_zero()
 {
     psa_handle_t handle = 0;
 
-    handle = client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    handle = negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    memset(response_buf, 0, CLIENT_RSP_BUF_SIZE);
+    iovec_t resp = { response_buf, CLIENT_RSP_BUF_SIZE };
 
-    uint8_t response_buf[CLIENT_RSP_BUF_SIZE] = {0};
-
-    psa_call( handle,
-              NULL,
-              PSA_MAX_INVEC_LEN,
-              response_buf,
-              CLIENT_RSP_BUF_SIZE
-            );
+    psa_call(handle, NULL, PSA_MAX_INVEC_LEN, &resp, 1);
 
     TEST_FAIL_MESSAGE("client_call_iovecs_null_tx_len_not_zero negative test failed");
 }
@@ -186,15 +165,15 @@ void client_call_iovecs_null_tx_len_not_zero()
 //Testing client call iovec base
 void client_call_iovec_base_null_len_not_zero()
 {
-    client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
 
     uint8_t data[2] = {1, 0};
 
-    iovec iovec_temp[PSA_MAX_INVEC_LEN] = {{NULL, sizeof(data)},
+    iovec_t iovec_temp[PSA_MAX_INVEC_LEN] = {{NULL, sizeof(data)},
                                            {data, sizeof(data)},
                                            {data, sizeof(data)}};
 
-    client_ipc_tests_call(PSA_NULL_HANDLE, iovec_temp, PSA_MAX_INVEC_LEN, 0);
+    negative_client_ipc_tests_call(PSA_NULL_HANDLE, iovec_temp, PSA_MAX_INVEC_LEN, 0);
 
     TEST_FAIL_MESSAGE("client_call_iovec_base_null_len_not_zero negative test failed");
 }
@@ -204,16 +183,16 @@ void client_call_invalid_handle()
 {
     psa_handle_t handle = 0, invalid_handle = 0;
 
-    handle = client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    handle = negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
     invalid_handle = handle + 10;
 
     uint8_t data[2] = {1, 0};
 
-    iovec iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
+    iovec_t iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
                                            {data, sizeof(data)},
                                            {data, sizeof(data)}};
 
-    client_ipc_tests_call(invalid_handle, iovec_temp, PSA_MAX_INVEC_LEN, 0);
+    negative_client_ipc_tests_call(invalid_handle, iovec_temp, PSA_MAX_INVEC_LEN, 0);
 
     TEST_FAIL_MESSAGE("client_call_invalid_handle negative test failed");
 }
@@ -221,15 +200,15 @@ void client_call_invalid_handle()
 //Testing client call handle is null (PSA_NULL_HANDLE)
 void client_call_handle_is_null()
 {
-    client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
 
     uint8_t data[2] = {1, 0};
 
-    iovec iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
+    iovec_t iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
                                            {data, sizeof(data)},
                                            {data, sizeof(data)}};
 
-    client_ipc_tests_call(PSA_NULL_HANDLE, iovec_temp, PSA_MAX_INVEC_LEN, 0);
+    negative_client_ipc_tests_call(PSA_NULL_HANDLE, iovec_temp, PSA_MAX_INVEC_LEN, 0);
 
     TEST_FAIL_MESSAGE("client_call_handle_is_null negative test failed");
 }
@@ -239,18 +218,18 @@ void client_close_invalid_handle()
 {
     psa_handle_t handle = 0, invalid_handle = 0;
 
-    handle = client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    handle = negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
     invalid_handle = handle + 10;
 
     uint8_t data[2] = {1, 0};
 
-    iovec iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
+    iovec_t iovec_temp[PSA_MAX_INVEC_LEN] = {{data, sizeof(data)},
                                            {data, sizeof(data)},
                                            {data, sizeof(data)}};
 
-    client_ipc_tests_call(handle, iovec_temp, PSA_MAX_INVEC_LEN, 0);
+    negative_client_ipc_tests_call(handle, iovec_temp, PSA_MAX_INVEC_LEN, 0);
 
-    client_ipc_tests_close(invalid_handle);
+    negative_client_ipc_tests_close(invalid_handle);
 
     TEST_FAIL_MESSAGE("client_close_invalid_handle negative test failed");
 }

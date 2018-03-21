@@ -157,12 +157,13 @@ PSA_TEST_CLIENT(rhandle_factorial)
     uint32_t secure_value = 0;
     uint32_t value = 1;
     psa_error_t status = PSA_SUCCESS;
+    iovec_t resp = { &secure_value, sizeof(secure_value) };
     psa_handle_t test_handle = psa_connect(TEST, TEST_SF_MINOR);
     TEST_ASSERT(test_handle > 0);
 
     for (uint32_t i = 1; i <= 5; i++) {
         value *= i;
-        status = psa_call(test_handle, NULL, 0, &secure_value, sizeof(secure_value));
+        status = psa_call(test_handle, NULL, 0, &resp, 1);
         TEST_ASSERT_EQUAL(PSA_SUCCESS, status);
         TEST_ASSERT_EQUAL(value, secure_value);
     }
@@ -180,8 +181,9 @@ PSA_TEST_CLIENT(cross_partition_call)
     iovec_t iovec = { cross_part_buf, in_len };
     uint8_t *response_buf = (uint8_t*)malloc(sizeof(uint8_t) * OUT_BUFFER_SIZE);
     memset(response_buf, 0, OUT_BUFFER_SIZE);
+    iovec_t resp = { response_buf, OUT_BUFFER_SIZE };
 
-    psa_error_t status = psa_call(test_handle, &iovec, 1, response_buf, OUT_BUFFER_SIZE);
+    psa_error_t status = psa_call(test_handle, &iovec, 1, &resp, 1);
     TEST_ASSERT_EQUAL(PSA_SUCCESS, status);
     TEST_ASSERT_EQUAL_STRING_LEN("MPS emoclew dna olleHMPS emoclew dna olleH", response_buf, in_len*2);
     free(response_buf);
@@ -240,8 +242,9 @@ utest::v1::status_t spm_case_teardown(const Case *const source, const size_t pas
     psa_error_t test_status = PSA_SUCCESS;
     test_action_t action = GET_TEST_RESULT;
     iovec_t data = {&action, sizeof(action)};
+    iovec_t resp = {&test_status, sizeof(test_status)};
 
-    status = psa_call(control_handle, &data, 1, &test_status, sizeof(test_status));
+    status = psa_call(control_handle, &data, 1, &resp, 1);
     TEST_ASSERT_EQUAL(PSA_SUCCESS, status);
     TEST_ASSERT_EQUAL(PSA_SUCCESS, test_status);
     return greentea_case_teardown_handler(source, passed, failed, reason);

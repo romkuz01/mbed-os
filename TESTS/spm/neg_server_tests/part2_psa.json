@@ -70,20 +70,6 @@
       "minor_policy": "relaxed"
     },
     {
-      "sfid": "PART2_WRITE_OFFSET_BIGGER_MAX",
-      "signal": "PART2_WRITE_OFFSET_BIGGER_MAX_MSK",
-      "non_secure_clients": true,
-      "minor_version": 5,
-      "minor_policy": "relaxed"
-    },
-    {
-      "sfid": "PART2_WRITE_OFFSET_BIGGER_RX_SIZE",
-      "signal": "PART2_WRITE_OFFSET_BIGGER_RX_SIZE_MSK",
-      "non_secure_clients": true,
-      "minor_version": 5,
-      "minor_policy": "relaxed"
-    },
-    {
       "sfid": "PART2_WRITE_RX_BUFF_NULL",
       "signal": "PART2_WRITE_RX_BUFF_NULL_MSK",
       "non_secure_clients": true,
