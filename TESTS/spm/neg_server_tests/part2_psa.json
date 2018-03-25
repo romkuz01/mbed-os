@@ -145,6 +145,34 @@
       "non_secure_clients": true,
       "minor_version": 5,
       "minor_policy": "relaxed"
+    },
+    {
+      "sfid": "PART2_READ_WRAPAROUND",
+      "signal": "PART2_READ_WRAPAROUND_MSK",
+      "non_secure_clients": true,
+      "minor_version": 5,
+      "minor_policy": "relaxed"
+    },
+    {
+      "sfid": "PART2_READ_EXCESE_INVEC",
+      "signal": "PART2_READ_EXCESE_INVEC_MSK",
+      "non_secure_clients": true,
+      "minor_version": 5,
+      "minor_policy": "relaxed"
+    },
+    {
+      "sfid": "PART2_WRITE_WRAPAROUND",
+      "signal": "PART2_WRITE_WRAPAROUND_MSK",
+      "non_secure_clients": true,
+      "minor_version": 5,
+      "minor_policy": "relaxed"
+    },
+    {
+      "sfid": "PART2_WRITE_EXCESE_OUTVEC",
+      "signal": "PART2_WRITE_EXCESE_OUTVEC_MSK",
+      "non_secure_clients": true,
+      "minor_version": 5,
+      "minor_policy": "relaxed"
     }
   ],
   "source_files": [

@@ -234,6 +234,38 @@ void client_close_invalid_handle()
     TEST_FAIL_MESSAGE("client_close_invalid_handle negative test failed");
 }
 
+void client_call_buffer_wrap_around()
+{
+    psa_handle_t handle = 0;
+    iovec_t iovec_temp = { (void*)0x80000000, UINT32_MAX };
+
+    handle = negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    psa_call(handle, &iovec_temp, 1, NULL, 0);
+
+    TEST_FAIL_MESSAGE("client_call_buffer_wrap_around negative test failed");
+}
+
+void client_connect_not_allowed_from_nspe()
+{
+    psa_connect(PART1_SF2, 5);
+
+    TEST_FAIL_MESSAGE("client_connect_not_allowed_from_nspe negative test failed");
+}
+
+void client_call_excese_outvec()
+{
+    psa_handle_t handle = 0;
+    uint8_t data[2] = {1, 0};
+    iovec_t iovec_temp[PSA_MAX_OUTVEC_LEN + 1] = {{data, sizeof(data)},
+                                           {data, sizeof(data)},
+                                           {data, sizeof(data)},
+                                           {data, sizeof(data)}};
+
+    handle = negative_client_ipc_tests_connect(PART1_SF1, MINOR_VER);
+    psa_call(handle, NULL, 0, iovec_temp, PSA_MAX_OUTVEC_LEN + 1);
+
+    TEST_FAIL_MESSAGE("client_call_excese_outvec negative test failed");
+}
 
 PSA_NEG_TEST(client_connect_invalid_sfid)
 PSA_NEG_TEST(client_connect_invalid_pol_ver_relaxed)
@@ -245,6 +277,9 @@ PSA_NEG_TEST(client_call_iovec_base_null_len_not_zero)
 PSA_NEG_TEST(client_call_invalid_handle)
 PSA_NEG_TEST(client_call_handle_is_null)
 PSA_NEG_TEST(client_close_invalid_handle)
+PSA_NEG_TEST(client_call_buffer_wrap_around)
+PSA_NEG_TEST(client_connect_not_allowed_from_nspe)
+PSA_NEG_TEST(client_call_excese_outvec)
 
 utest::v1::status_t spm_case_teardown(const Case *const source, const size_t passed, const size_t failed, const failure_t reason)
 {
@@ -253,18 +288,23 @@ utest::v1::status_t spm_case_teardown(const Case *const source, const size_t pas
     return greentea_case_teardown_handler(source, passed, failed, reason);
 }
 
+#define SPM_UTEST_CASE(desc, test) Case(desc, PSA_NEG_TEST_NAME(test), spm_case_teardown)
+
 // Test cases
 Case cases[] = {
-    Case("Testing client connect invalid sfid", PSA_NEG_TEST_NAME(client_connect_invalid_sfid), spm_case_teardown),
-    Case("Testing client connect version policy relaxed invalid minor", PSA_NEG_TEST_NAME(client_connect_invalid_pol_ver_relaxed), spm_case_teardown),
-    Case("Testing client connect version policy strict invalid minor", PSA_NEG_TEST_NAME(client_connect_invalid_pol_ver_strict), spm_case_teardown),
-    Case("Testing client call invalid tx_len", PSA_NEG_TEST_NAME(client_call_invalid_tx_len), spm_case_teardown),
-    Case("Testing client call rx_buff is NULL rx_len is not 0", PSA_NEG_TEST_NAME(client_call_rx_buff_null_rx_len_not_zero), spm_case_teardown),
-    Case("Testing client call iovecs is NULL tx_len is not 0", PSA_NEG_TEST_NAME(client_call_iovecs_null_tx_len_not_zero), spm_case_teardown),
-    Case("Testing client call iovec base NULL while iovec len not 0", PSA_NEG_TEST_NAME(client_call_iovec_base_null_len_not_zero), spm_case_teardown),
-    Case("Testing client call handle does not exist", PSA_NEG_TEST_NAME(client_call_invalid_handle), spm_case_teardown),
-    Case("Testing client call handle is PSA_NULL_HANDLE", PSA_NEG_TEST_NAME(client_call_handle_is_null), spm_case_teardown),
-    Case("Testing client close handle does not exist", PSA_NEG_TEST_NAME(client_close_invalid_handle), spm_case_teardown)
+    SPM_UTEST_CASE("Testing client connect invalid sfid", client_connect_invalid_sfid),
+    SPM_UTEST_CASE("Testing client connect version policy relaxed invalid minor", client_connect_invalid_pol_ver_relaxed),
+    SPM_UTEST_CASE("Testing client connect version policy strict invalid minor", client_connect_invalid_pol_ver_strict),
+    SPM_UTEST_CASE("Testing client call invalid tx_len", client_call_invalid_tx_len),
+    SPM_UTEST_CASE("Testing client call rx_buff is NULL rx_len is not 0", client_call_rx_buff_null_rx_len_not_zero),
+    SPM_UTEST_CASE("Testing client call iovecs is NULL tx_len is not 0", client_call_iovecs_null_tx_len_not_zero),
+    SPM_UTEST_CASE("Testing client call iovec base NULL while iovec len not 0", client_call_iovec_base_null_len_not_zero),
+    SPM_UTEST_CASE("Testing client call handle does not exist", client_call_invalid_handle),
+    SPM_UTEST_CASE("Testing client call handle is PSA_NULL_HANDLE", client_call_handle_is_null),
+    SPM_UTEST_CASE("Testing client close handle does not exist", client_close_invalid_handle),
+    SPM_UTEST_CASE("Testing client call with buffer wrap-around", client_call_buffer_wrap_around),
+    SPM_UTEST_CASE("Testing client connect to non-NSPE SF", client_connect_not_allowed_from_nspe),
+    SPM_UTEST_CASE("Testing client call with too much outvec's", client_call_excese_outvec)
 };
 
 utest::v1::status_t spm_setup(const size_t number_of_cases)

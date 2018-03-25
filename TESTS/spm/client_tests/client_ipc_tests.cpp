@@ -434,6 +434,10 @@ void exceed_num_of_max_channels()
     }
 }
 
+void client_close_null_handle()
+{
+    client_ipc_tests_close(PSA_NULL_HANDLE);
+}
 
  // Test cases
 Case cases[] = {
@@ -447,6 +451,7 @@ Case cases[] = {
     Case("Testing client multiple calls on different channels to the same SFID", multi_thread_diff_handles),
     Case("Testing client multiple calls on the same channel to the same SFID", multi_thread_same_handle),
     Case("Testing client exceed num of max channels allowed", exceed_num_of_max_channels),
+    Case("Testing client close on NULL handle", client_close_null_handle),
 };
 
 utest::v1::status_t test_setup(const size_t number_of_cases)

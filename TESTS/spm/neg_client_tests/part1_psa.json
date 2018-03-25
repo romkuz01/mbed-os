@@ -16,7 +16,7 @@
     {
       "sfid": "PART1_SF2",
       "signal": "PART1_SF2_MSK",
-      "non_secure_clients": true,
+      "non_secure_clients": false,
       "minor_version": 5,
       "minor_policy": "strict"
     }

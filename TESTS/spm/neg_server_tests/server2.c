@@ -310,6 +310,80 @@ void server_main2(void *ptr)
             }
             psa_end(msg.handle, PSA_SUCCESS);
         }
+        else if (signals & PART2_READ_WRAPAROUND_MSK) {
+            psa_get(PART2_READ_WRAPAROUND_MSK, &msg);
+            switch (msg.type) {
+                case PSA_IPC_MSG_TYPE_CONNECT: {
+                    break;
+                }
+                case PSA_IPC_MSG_TYPE_CALL: {
+                    psa_read(msg.handle, 0, (void*)0x80000000, UINT32_MAX);
+                    TEST_FAIL_MESSAGE("server_read_on_wraparound_msg_ptr negative test failed");
+                    break;
+                }
+
+                default: {
+                    TEST_FAIL_MESSAGE("server_read_on_wraparound_msg_ptr msg type failure");
+                }
+            }
+            psa_end(msg.handle, PSA_SUCCESS);
+        }
+        else if (signals & PART2_READ_EXCESE_INVEC_MSK) {
+            psa_get(PART2_READ_EXCESE_INVEC_MSK, &msg);
+            switch (msg.type) {
+                case PSA_IPC_MSG_TYPE_CONNECT: {
+                    break;
+                }
+                case PSA_IPC_MSG_TYPE_CALL: {
+                    uint32_t val = 0;
+                    psa_read(msg.handle, PSA_MAX_INVEC_LEN + 1, &val, sizeof(val));
+                    TEST_FAIL_MESSAGE("server_read_on_wraparound_msg_ptr negative test failed");
+                    break;
+                }
+
+                default: {
+                    TEST_FAIL_MESSAGE("server_read_on_wraparound_msg_ptr msg type failure");
+                }
+            }
+            psa_end(msg.handle, PSA_SUCCESS);
+        }
+        else if (signals & PART2_WRITE_WRAPAROUND_MSK) {
+            psa_get(PART2_WRITE_WRAPAROUND_MSK, &msg);
+            switch (msg.type) {
+                case PSA_IPC_MSG_TYPE_CONNECT: {
+                    break;
+                }
+                case PSA_IPC_MSG_TYPE_CALL: {
+                    psa_write(msg.handle, 0, (void*)0x80000000, UINT32_MAX);
+                    TEST_FAIL_MESSAGE("server_write_on_wraparound_msg_ptr negative test failed");
+                    break;
+                }
+
+                default: {
+                    TEST_FAIL_MESSAGE("server_write_on_wraparound_msg_ptr msg type failure");
+                }
+            }
+            psa_end(msg.handle, PSA_SUCCESS);
+        }
+        else if (signals & PART2_WRITE_EXCESE_OUTVEC_MSK) {
+            psa_get(PART2_WRITE_EXCESE_OUTVEC_MSK, &msg);
+            switch (msg.type) {
+                case PSA_IPC_MSG_TYPE_CONNECT: {
+                    break;
+                }
+                case PSA_IPC_MSG_TYPE_CALL: {
+                    uint32_t val = 0;
+                    psa_write(msg.handle, PSA_MAX_OUTVEC_LEN + 1, &val, sizeof(val));
+                    TEST_FAIL_MESSAGE("server_write_from_excese_outvec negative test failed");
+                    break;
+                }
+
+                default: {
+                    TEST_FAIL_MESSAGE("server_write_from_excese_outvec msg type failure");
+                }
+            }
+            psa_end(msg.handle, PSA_SUCCESS);
+        }
         else {
             SPM_ASSERT(false);
         }
