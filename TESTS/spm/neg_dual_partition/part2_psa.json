@@ -1,0 +1,20 @@
+{
+  "name": "PART2",
+  "type": "SECURE",
+  "priority": "NORMAL",
+  "id": "0x00000002",
+  "entry_point": "server_main2",
+  "stack_size": "0x400",
+  "heap_size": "0x400",
+  "secure_functions": [{
+      "sfid": "DUMMY",
+      "signal": "DUMMY_MSK",
+      "non_secure_clients": false,
+      "minor_version": 5,
+      "minor_policy": "relaxed"
+    }
+  ],
+  "source_files": [
+    "server2.c"
+  ]
+}
