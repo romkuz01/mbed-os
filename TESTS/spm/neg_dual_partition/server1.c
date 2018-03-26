@@ -19,12 +19,13 @@
 #include "spm_panic.h"
 #include "spm_server.h"
 #include "spm_client.h"
+#include "spm_panic.h"
 #include "psa_part1_partition.h"
 #include "psa_client_common.h"
 
 #define MINOR_VER 5
 
-void server_main2(void *ptr)
+void server_main1(void *ptr)
 {
     psa_msg_t msg = {0};
     uint32_t signals = 0;

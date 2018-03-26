@@ -79,7 +79,7 @@ utest::v1::status_t spm_case_teardown(const Case *const source, const size_t pas
 
 // Test cases
 Case cases[] = {
-    SPM_UTEST_CASE("Testing server calling sfid without extern sfid", server_call_sfid_without_extern_sfid)
+    SPM_UTEST_CASE("Testing server calling sfid without extern sfid", server_call_sfid_without_extern_sfid),
     SPM_UTEST_CASE("Testing server calling sfid within the same partition", server_call_sfid_in_same_partition)
 };
 
