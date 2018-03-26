@@ -12,13 +12,6 @@
       "non_secure_clients": true,
       "minor_version": 5,
       "minor_policy": "relaxed"
-    },
-    {
-      "sfid": "PART1_CALL_INSIDE_PARTITION",
-      "signal": "PART1_CALL_INSIDE_PARTITION_MSK",
-      "non_secure_clients": true,
-      "minor_version": 5,
-      "minor_policy": "relaxed"
     }
   ],
   "source_files": [

@@ -57,7 +57,7 @@ void server_call_sfid_without_extern_sfid()
 
 void server_call_sfid_in_same_partition()
 {
-    psa_handle_t handle = psa_connect(PART1_CALL_INSIDE_PARTITION, MINOR_VER);
+    psa_handle_t handle = psa_connect(PART2_CALL_INSIDE_PARTITION, MINOR_VER);
     TEST_ASSERT_TRUE(handle > 0);
 
     psa_call(handle, NULL, 0, NULL, 0);
